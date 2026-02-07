@@ -22,14 +22,8 @@ for (var i = 0; i < stars; i++) {
     starArray.push({ x, y, radius, hue, sat, opacity });
 }
 
-var frameNumber = 0;
-var opacity = 0;
-var secondOpacity = 0;
-var thirdOpacity = 0;
-
-var baseFrame = context.getImageData(0, 0, window.innerWidth, window.innerHeight);
-
-function drawStars() {
+// Draw stars once BEFORE saving baseFrame
+function drawStarsOnce() {
     for (var i = 0; i < stars; i++) {
         var star = starArray[i];
         context.beginPath();
@@ -38,6 +32,14 @@ function drawStars() {
         context.fill();
     }
 }
+
+drawStarsOnce();
+var baseFrame = context.getImageData(0, 0, window.innerWidth, window.innerHeight);
+
+var frameNumber = 0;
+var opacity = 0;
+var secondOpacity = 0;
+var thirdOpacity = 0;
 
 function updateStars() {
     for (var i = 0; i < stars; i++) {
@@ -60,6 +62,7 @@ function drawText() {
     context.font = fontSize + "px Comic Sans MS";
     context.textAlign = "center";
 
+    // Blue glow ONLY for text
     context.shadowColor = "rgba(45, 45, 255, 1)";
     context.shadowBlur = 8;
 
@@ -157,22 +160,26 @@ function drawText() {
     // Final line + heart
     if(frameNumber == 3500) thirdOpacity = 0;
     if(frameNumber > 3500){
+        // Turn OFF blue glow before drawing heart
+        context.shadowColor = "transparent";
+        context.shadowBlur = 0;
+
+        // Final message
         context.fillStyle = `rgba(45, 45, 255, ${thirdOpacity})`;
+        context.font = fontSize + "px Comic Sans MS";
         context.fillText("Sincerely, from a fan.", canvas.width/2, canvas.height/2 + 80);
 
-        // Heart
+        // Heart (clean red, no blue glow)
         context.fillStyle = `rgba(255, 0, 80, ${thirdOpacity})`;
         context.font = (fontSize + 20) + "px Comic Sans MS";
         context.fillText("❤", canvas.width/2, canvas.height/2 + 150);
 
         thirdOpacity += 0.01;
     }
-
-    context.shadowColor = "transparent";
 }
+
 function draw() {
     context.putImageData(baseFrame, 0, 0);
-    drawStars();
     updateStars();
     drawText();
 
@@ -183,6 +190,8 @@ function draw() {
 window.addEventListener("resize", function () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
+    drawStarsOnce();
     baseFrame = context.getImageData(0, 0, window.innerWidth, window.innerHeight);
 });
 
