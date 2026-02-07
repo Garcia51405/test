@@ -38,7 +38,6 @@ var baseFrame = context.getImageData(0, 0, window.innerWidth, window.innerHeight
 
 var frameNumber = 0;
 var opacity = 0;
-var secondOpacity = 0;
 var thirdOpacity = 0;
 
 function updateStars() {
@@ -62,7 +61,7 @@ function drawText() {
     context.font = fontSize + "px Comic Sans MS";
     context.textAlign = "center";
 
-    // Blue glow ONLY for text
+    // Blue glow for text
     context.shadowColor = "rgba(45, 45, 255, 1)";
     context.shadowBlur = 8;
 
@@ -157,22 +156,29 @@ function drawText() {
         opacity -= 0.01;
     }
 
-    // Final line + heart
+    // Final line + glowing blue heart
     if(frameNumber == 3500) thirdOpacity = 0;
     if(frameNumber > 3500){
-        // Turn OFF blue glow before drawing heart
-        context.shadowColor = "transparent";
-        context.shadowBlur = 0;
 
-        // Final message
+        // Final message (blue glow)
+        context.shadowColor = "rgba(45, 45, 255, 1)";
+        context.shadowBlur = 8;
+
         context.fillStyle = `rgba(45, 45, 255, ${thirdOpacity})`;
         context.font = fontSize + "px Comic Sans MS";
         context.fillText("Sincerely, from a fan.", canvas.width/2, canvas.height/2 + 80);
 
-        // Heart (clean red, no blue glow)
-        context.fillStyle = `rgba(255, 0, 80, ${thirdOpacity})`;
+        // Heart with soft blue glow
+        context.shadowColor = "rgba(45, 45, 255, 1)";
+        context.shadowBlur = 15;
+
+        context.fillStyle = `rgba(255, 255, 255, ${thirdOpacity})`; // white heart
         context.font = (fontSize + 20) + "px Comic Sans MS";
         context.fillText("❤", canvas.width/2, canvas.height/2 + 150);
+
+        // turn glow off after
+        context.shadowColor = "transparent";
+        context.shadowBlur = 0;
 
         thirdOpacity += 0.01;
     }
